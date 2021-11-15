@@ -31,6 +31,8 @@ df_cwbLond = pd.DataFrame(listaEmpresas)
 df_cwbLond.to_csv('CwbLond CapSoc 5000.csv', sep=',', index=False)
 
 # -------------------------------------------
+# Gera gráfico mostrando o total de empresas por bairro em Curitiba
+
 bairros = []
 for i in range(len(dadosEmpresa)):
     linha = dadosEndereco.iloc[i]
@@ -50,3 +52,42 @@ plt.title('Número de empresas por bairro em Curitiba')
 plt.xlabel('Quantidade')
 plt.ylabel('Bairro')
 plt.show()
+
+# -------------------------------------------
+#
+
+bairros = []
+capitalSocial = []
+for i in range(len(dadosEmpresa)):
+    linhaEndereco = dadosEndereco.iloc[i]
+    linhaEmpresa = dadosEmpresa.iloc[i]
+    if linhaEndereco['municipio'] == 'CURITIBA':
+        bairros.append(linhaEndereco['bairro'])
+        capitalSocial.append(linhaEmpresa['capital_social'])
+
+"""print(bairros)
+print(len(bairros))
+print(capitalSocial)
+print(len(capitalSocial))"""
+
+bairrosSemRepet = []
+for i in range(len(bairros)):
+    if bairros[i] not in bairrosSemRepet:
+        bairrosSemRepet.append(bairros[i])
+
+numeroDoBairro = []
+for i in range(len(bairrosSemRepet)):
+    numeroDoBairro.append(i)
+
+bairrosNumerados = dict(zip(bairrosSemRepet, numeroDoBairro))
+
+capSocialPorBairro = []
+for i in range(len(bairrosSemRepet)):
+    capSocialPorBairro.append(0)
+
+for i in range(len(bairros)):
+    capSocialPorBairro[bairrosNumerados[bairros[i]]] += capitalSocial[i]
+
+dictCapitalPorBairro = dict(zip(bairrosSemRepet, capSocialPorBairro))
+
+# print(dictCapitalPorBairro)
