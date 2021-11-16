@@ -28,71 +28,81 @@ for i in range(len(dadosEmpresa)):
         listaEmpresas.append(linhaEmpresa)
 
 df_cwbLond = pd.DataFrame(listaEmpresas)
+df_cwbLond['bairro'] = dadosEndereco['bairro']
+df_cwbLond['municipio'] = dadosEndereco['municipio']
 df_cwbLond.to_csv('CwbLond CapSoc 5000.csv', sep=',', index=False)
 
 # -------------------------------------------
+grafico = int(input('Qual gráfico deseja gerar?\nDigite: [5] para tópico 5\nDigite: [6] para tópico 6\n'))
+# -------------------------------------------
 # Gera gráfico mostrando o total de empresas por bairro em Curitiba
 
-bairros = []
-for i in range(len(dadosEmpresa)):
-    linha = dadosEndereco.iloc[i]
-    if linha['municipio'] == 'CURITIBA':
-        bairros.append(linha['bairro'])
+if grafico == 5:
+    bairros = []
+    for i in range(len(dadosEmpresa)):
+        linha = dadosEndereco.iloc[i]
+        if linha['municipio'] == 'CURITIBA':
+            bairros.append(linha['bairro'])
 
-bairrosSemRepet = []
-for i in range(len(bairros)):
-    if bairros[i] not in bairrosSemRepet:
-        bairrosSemRepet.append(bairros[i])
+    bairrosSemRepet = []
+    for i in range(len(bairros)):
+        if bairros[i] not in bairrosSemRepet:
+            bairrosSemRepet.append(bairros[i])
 
-"""fig = plt.figure(figsize=(13, 8))
-plt.rc('ytick', labelsize=7)
-plt.grid()
-plt.hist(bairros, bins=len(bairrosSemRepet), orientation='horizontal', rwidth=0.7)
-plt.title('Número de empresas por bairro em Curitiba')
-plt.xlabel('Quantidade')
-plt.ylabel('Bairro')
-#plt.show()"""
+    fig = plt.figure(figsize=(13, 8))
+    plt.rc('ytick', labelsize=7)
+    plt.grid()
+    plt.hist(bairros, bins=len(bairrosSemRepet), orientation='horizontal', rwidth=0.7)
+    plt.title('Número de empresas por bairro em Curitiba')
+    plt.xlabel('Quantidade')
+    plt.ylabel('Bairro')
+    plt.show()
 
 # -------------------------------------------
-#
+# Gera um gráfico mostrando os bairros de Curitiba com maiores médias de capital social
 
-bairros = []
-capitalSocial = []
-for i in range(len(dadosEmpresa)):
-    linhaEndereco = dadosEndereco.iloc[i]
-    linhaEmpresa = dadosEmpresa.iloc[i]
-    if linhaEndereco['municipio'] == 'CURITIBA':
-        bairros.append(linhaEndereco['bairro'])
-        capitalSocial.append(linhaEmpresa['capital_social'])
+elif grafico == 6:
+    bairros = []
+    capitalSocial = []
+    for i in range(len(dadosEmpresa)):
+        linhaEndereco = dadosEndereco.iloc[i]
+        linhaEmpresa = dadosEmpresa.iloc[i]
+        if linhaEndereco['municipio'] == 'CURITIBA':
+            bairros.append(linhaEndereco['bairro'])
+            capitalSocial.append(linhaEmpresa['capital_social'])
 
-bairrosSemRepet = []
-for i in range(len(bairros)):
-    if bairros[i] not in bairrosSemRepet:
-        bairrosSemRepet.append(bairros[i])
+    bairrosSemRepet = []
+    for i in range(len(bairros)):
+        if bairros[i] not in bairrosSemRepet:
+            bairrosSemRepet.append(bairros[i])
 
-numeroDoBairro = []
-for i in range(len(bairrosSemRepet)):
-    numeroDoBairro.append(i)
+    numeroDoBairro = []
+    for i in range(len(bairrosSemRepet)):
+        numeroDoBairro.append(i)
 
-bairrosNumerados = dict(zip(bairrosSemRepet, numeroDoBairro))
+    bairrosNumerados = dict(zip(bairrosSemRepet, numeroDoBairro))
 
-capSocialPorBairro = []
-for i in range(len(bairrosSemRepet)):
-    capSocialPorBairro.append(0)
-for i in range(len(bairros)):
-    capSocialPorBairro[bairrosNumerados[bairros[i]]] += capitalSocial[i]
+    capSocialPorBairro = []
+    totalEmpresasPorBairro = []
+    for i in range(len(bairrosSemRepet)):
+        capSocialPorBairro.append(0)
+        totalEmpresasPorBairro.append(0)
+    for i in range(len(bairros)):
+        capSocialPorBairro[bairrosNumerados[bairros[i]]] += capitalSocial[i]
+        totalEmpresasPorBairro[bairrosNumerados[bairros[i]]] += 1
+    for i in range(len(capSocialPorBairro)):
+        capSocialPorBairro[i] /= totalEmpresasPorBairro[i]
 
-media = sum(capSocialPorBairro) / len(capSocialPorBairro)
-topCapitalSocial = [0]
-topBairro = ['OUTROS']
+    mediaTotal = sum(capSocialPorBairro) / len(capSocialPorBairro)
+    topCapitalSocial = [0]
+    topBairro = ['OUTROS']
+    for i in range(1, len(capSocialPorBairro)):
+        if capSocialPorBairro[i] > mediaTotal:
+            topCapitalSocial.append(capSocialPorBairro[i])
+            topBairro.append(bairrosSemRepet[i])
+        else:
+            topCapitalSocial[0] += capSocialPorBairro[i]
 
-for i in range(1, len(capSocialPorBairro)):
-    if capSocialPorBairro[i] > media:
-        topCapitalSocial.append(capSocialPorBairro[i])
-        topBairro.append(bairrosSemRepet[i])
-    else:
-        topCapitalSocial[0] += capSocialPorBairro[i]
-
-plt.pie(topCapitalSocial, labels=topBairro, autopct='%1.1f%%', pctdistance=0.6, startangle=90)
-plt.title('Capital Social por Bairro em Curitiba')
-plt.show()
+    plt.pie(topCapitalSocial, labels=topBairro, autopct='%1.1f%%', pctdistance=0.7, startangle=90)
+    plt.title('Bairros de Curitiba com as maiores médias de capital social')
+    plt.show()
