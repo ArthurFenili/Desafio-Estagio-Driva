@@ -61,6 +61,10 @@ if grafico == 5:
 # -------------------------------------------
 # Gera um gráfico mostrando os bairros de Curitiba com maiores médias de capital social
 
+# Observando esses dois arquivos, uma análise que eu faria seria uma visualização dos bairros nos quais a média de
+# capital social é mais alta, pois assim, daria uma ideia ao cliente de quais bairros supostamente dão mais lucro e
+# permitem maior crescimento da empresa. Na implementação utilizei os bairros da cidade de Curitiba.
+
 elif grafico == 6:
     bairros = []
     capitalSocial = []
