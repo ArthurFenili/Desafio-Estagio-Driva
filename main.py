@@ -21,15 +21,15 @@ df_opSimplesSim.to_csv('Empresas opção_pelo_simples SIM.csv', sep=',', index=F
 # Gera arquivo csv com as empresas de Curitiba ou Londrina com capital social maior que 5000 reais
 
 listaEmpresas = []
-for i in range(len(dadosEmpresa)):
-    linhaEmpresa = dadosEmpresa.iloc[i]
-    linhaEndereco = dadosEndereco.iloc[i]
-    if (linhaEndereco['municipio'] == 'CURITIBA' or 'LONDRINA') and (linhaEmpresa['capital_social'] > 5000):
-        listaEmpresas.append(linhaEmpresa)
+dadosTotais = pd.merge(dadosEmpresa, dadosEndereco)
+for i in range(len(dadosTotais)):
+    linha = dadosTotais.iloc[i]
+    if (linha['municipio'] == 'CURITIBA' or 'LONDRINA') and (linha['capital_social'] > 5000):
+        listaEmpresas.append(linha)
 
 df_cwbLond = pd.DataFrame(listaEmpresas)
-df_cwbLond['bairro'] = dadosEndereco['bairro']
-df_cwbLond['municipio'] = dadosEndereco['municipio']
+df_cwbLond['bairro'] = dadosTotais['bairro']
+df_cwbLond['municipio'] = dadosTotais['municipio']
 df_cwbLond.to_csv('CwbLond CapSoc 5000.csv', sep=',', index=False)
 
 # -------------------------------------------
@@ -104,7 +104,7 @@ for i in range(1, len(capSocialPorBairro)):
     else:
         topCapitalSocial[0] += capSocialPorBairro[i]
 
-plt.figure(figsize=(12,9))
+plt.figure(figsize=(12, 9))
 plt.pie(topCapitalSocial, labels=topBairro, autopct='%1.1f%%', pctdistance=0.7, startangle=90)
 plt.title('Bairros de Curitiba com as maiores médias de capital social')
 # plt.show()
